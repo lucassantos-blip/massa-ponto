@@ -3,3 +3,6 @@ export function format(n){return String(Math.floor(Math.abs(n)/60)).padStart(2,'
 export function dayKey(at){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at))}
 export function expected(day){return [0,6].includes(new Date(day+'T12:00:00').getDay())?0:480}
 export function summarize(entries,day){const worked=minutes(entries);const planned=expected(day);return {worked,planned,extra:entries.length%2?0:Math.max(0,worked-planned),missing:entries.length%2?0:Math.max(0,planned-worked),incomplete:entries.length%2===1}}
+
+export function once(fn){let done=false;return (...args)=>{if(done)return;done=true;return fn(...args)}}
+export function nextPunchLabel(count){return ['Entrada','Saída para intervalo','Retorno do intervalo','Saída final'][count]??'Marcação adicional'}
