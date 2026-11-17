@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/android-test.yml'
+      - 'src/style.css'
+      - 'index.html'
 permissions:
   contents: read
 jobs:
