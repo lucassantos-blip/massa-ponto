@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/android-test.yml'
       - 'src/style.css'
+      - 'src/main.tsx'
+      - 'src/model.mjs'
       - 'index.html'
 permissions:
   contents: read

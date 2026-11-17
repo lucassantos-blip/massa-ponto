@@ -10,10 +10,11 @@ export function nextPunchLabel(count){return ['Entrada','Saída para intervalo',
 export function dayReport(marks,requests,day,planned,nowDay){
  const original=[...marks].sort((a,b)=>a.at.localeCompare(b.at));
  const approved=requests.filter(r=>r.status==='Aprovada');
- const included=approved.filter(r=>r.kind==='Ajuste de ponto'&&/^\d{2}:\d{2}$/.test(r.time)).map(r=>({id:'ajuste-'+r.id,person:r.person,at:new Date(day+'T'+r.time+':00-03:00').toISOString(),loc:'Ajuste aprovado'}));
- const list=[...original,...included].sort((a,b)=>a.at.localeCompare(b.at));
+ const ignored=new Set(approved.filter(r=>r.kind==='Ajuste de ponto'&&['Corrigir','Desconsiderar'].includes(r.adjustAction)).map(r=>r.targetId));
+ const included=approved.filter(r=>r.kind==='Ajuste de ponto'&&r.adjustAction!=='Desconsiderar'&&/^\d{2}:\d{2}$/.test(r.time)).map(r=>({id:'ajuste-'+r.id,person:r.person,at:new Date(day+'T'+r.time+':00-03:00').toISOString(),loc:'Ajuste aprovado'}));
+ const list=[...original.filter(m=>!ignored.has(m.id)),...included].sort((a,b)=>a.at.localeCompare(b.at));
  const worked=minutes(list);const incomplete=list.length%2===1;
- const abono=approved.filter(r=>r.kind==='Abono').reduce((sum,r)=>{const [h,m]=r.time.split(':').map(Number);return sum+(Number.isFinite(h)&&Number.isFinite(m)?h*60+m:0)},0);
+ const abono=approved.filter(r=>r.kind==='Abono').reduce((sum,r)=>{if(r.abonoMode==='Dia inteiro')return sum+planned;const [h,m]=r.time.split(':').map(Number);return sum+(Number.isFinite(h)&&Number.isFinite(m)?h*60+m:0)},0);
  const pending=incomplete||day>=nowDay;
  return {list,original,worked,planned,abono:Math.min(abono,Math.max(0,planned-worked)),extra:pending?0:Math.max(0,worked-planned),missing:pending?0:Math.max(0,planned-worked-abono),incomplete};
 }
