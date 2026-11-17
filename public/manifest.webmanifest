@@ -1,0 +1,16 @@
+{
+  "name": "Massa Ponto",
+  "short_name": "Massa Ponto",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f7fa",
+  "theme_color": "#6930A5",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
