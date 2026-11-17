@@ -1,0 +1,1 @@
+self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',event=>event.waitUntil(self.clients.claim())); // Não armazena registros, credenciais nem respostas de API. Modo offline não habilitado.

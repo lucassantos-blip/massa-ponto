@@ -14,3 +14,11 @@ Perfil, alternância demonstrativa entre gestor e colaborador, captura de locali
 NÃO usar com trabalhadores reais: não é REP-P, não fornece AFD/AEJ nem comprovantes regulamentares. GPS é opcional e não é prova de presença. Não inserir dados pessoais; limpe os dados locais após testes. Não há serviço externo configurado. O manifesto é uma preparação de instalação mobile; suporte offline e instalação precisam ser validados.
 
 Próxima etapa: autenticação, banco isolado por emissora, horário confiável, regras de jornada, tratamento auditável, armazenamento privado e integração regulamentar. Publicação somente após aprovação.
+
+## Aplicativo mobile demonstrativo
+- PWA: após publicar a versão web via HTTPS, abrir no Chrome Android ou Safari iOS e usar Instalar app / Adicionar à Tela de Início. O service worker não guarda dados nem permite registro offline.
+- Android: Node 22, Java 21 e SDK/Android Studio. Execute npm install e npm run android:prepare. O script cria a plataforma e concede apenas permissões de localização em primeiro plano; abra com npm run android:open.
+- GitHub Actions: em Actions > Massa Ponto - APK de teste > Run workflow, gerar o APK debug e baixar o artifact após execução bem-sucedida. Não publica em loja. Não utilizar dados reais.
+- iOS: a preparação exige macOS/Xcode e configuração das descrições de privacidade NSLocationWhenInUseUsageDescription e NSLocationAlwaysAndWhenInUseUsageDescription antes de testar. Não há build ou publicação iOS automatizada.
+- Câmera não é solicitada nesta versão. Anexos e câmera dependem da futura implantação com armazenamento privado.
+- O GPS é solicitado somente quando o usuário confirma uma marcação. Se indisponível, o protótipo registra a ocorrência. Não existe autenticação real nem REP-P.
