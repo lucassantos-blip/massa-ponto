@@ -10,9 +10,11 @@ export function nextPunchLabel(count){return ['Entrada','Saída para intervalo',
 export function dayReport(marks,requests,day,planned,nowDay){
  const original=[...marks].sort((a,b)=>a.at.localeCompare(b.at));
  const approved=requests.filter(r=>r.status==='Aprovada');
- const ignored=new Set(approved.filter(r=>r.kind==='Ajuste de ponto'&&['Corrigir','Desconsiderar'].includes(r.adjustAction)).map(r=>r.targetId));
- const included=approved.filter(r=>r.kind==='Ajuste de ponto'&&r.adjustAction!=='Desconsiderar'&&/^\d{2}:\d{2}$/.test(r.time)).map(r=>({id:'ajuste-'+r.id,person:r.person,at:new Date(day+'T'+r.time+':00-03:00').toISOString(),loc:'Ajuste aprovado'}));
- const list=[...original.filter(m=>!ignored.has(m.id)),...included].sort((a,b)=>a.at.localeCompare(b.at));
+ const batch=approved.filter(r=>r.kind==='Ajuste de ponto'&&Array.isArray(r.adjustments)).flatMap(r=>r.adjustments.map((e,i)=>({...e,person:r.person,requestId:r.id,index:i})));const ignored=new Set(approved.filter(r=>!r.adjustments).filter(r=>r.kind==='Ajuste de ponto'&&['Corrigir','Desconsiderar'].includes(r.adjustAction)).map(r=>r.targetId));
+ for(const e of batch){if(e.targetId&&(e.action==='Desconsiderar'||(e.action==='Corrigir'&&original.some(m=>m.id===e.targetId&&new Date(m.at).toLocaleTimeString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit'})!==e.time))))ignored.add(e.targetId)}
+ const included=approved.filter(r=>!r.adjustments).filter(r=>r.kind==='Ajuste de ponto'&&r.adjustAction!=='Desconsiderar'&&/^\d{2}:\d{2}$/.test(r.time)).map(r=>({id:'ajuste-'+r.id,person:r.person,at:new Date(day+'T'+r.time+':00-03:00').toISOString(),loc:'Ajuste aprovado'}));
+ const added=batch.filter(e=>e.action==='Incluir'||(e.action==='Corrigir'&&ignored.has(e.targetId))).filter(e=>/^([01]\d|2[0-3]):[0-5]\d$/.test(e.time)).map(e=>({id:'ajuste-'+e.requestId+'-'+e.index,person:e.person,at:new Date(day+'T'+e.time+':00-03:00').toISOString(),loc:'Ajuste aprovado'}));
+ const list=[...original.filter(m=>!ignored.has(m.id)),...included,...added].sort((a,b)=>a.at.localeCompare(b.at));
  const worked=minutes(list);const incomplete=list.length%2===1;
  const abono=approved.filter(r=>r.kind==='Abono').reduce((sum,r)=>{if(r.abonoMode==='Dia inteiro')return sum+planned;const [h,m]=r.time.split(':').map(Number);return sum+(Number.isFinite(h)&&Number.isFinite(m)?h*60+m:0)},0);
  const pending=incomplete||day>=nowDay;
